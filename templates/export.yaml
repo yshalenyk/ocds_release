@@ -1,0 +1,54 @@
+db:
+    net:
+        host: ${parts['couchdb.ini'].host}
+        port: ${parts['couchdb.ini'].port}
+        name: ${options['db_name']}
+    user.user:
+        user: ${options['user_name']}
+        password: ${options['user_password']}
+    user.admin: 
+        user: ${options['admin_name']}
+        password: ${options['admin_password']}
+
+app:
+    DEBUG: ${options['debug']}
+    SECRED_KEY: ${options['secred_key']}
+
+package:
+    publisher:
+        name: ${options['publisher']}
+    license: ${options['license']} 
+    initiationType: tender
+    publicationPolicy: ${options['policy']}
+
+    tags:
+        - tender
+        - award
+        - contract
+
+logging:
+    version: 1
+    root:
+        level: ERROR
+        handlers: [console]
+    loggers:
+        ocds_release.release:
+            level: INFO
+            handlers: [logfile]
+    
+    handlers:
+        logfile:
+            class: logging.handlers.RotatingFileHandler
+            filename: ${parts.buildout.directory}/var/log/export.log
+            formatter: simpleFormatter
+            level: DEBUG
+        console:
+            class: logging.StreamHandler
+            level: DEBUG
+            formatter: simpleFormatter
+            stream: ext://sys.stdout
+    formatters:
+        simpleFormatter:
+            class: logging.Formatter
+            format: '%(name)s %(asctime)s %(levelname)s %(message)s'
+            datefmt: '%d/%m/%Y %H:%M:%S'

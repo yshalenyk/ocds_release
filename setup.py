@@ -1,18 +1,32 @@
 from setuptools import setup
 
 
-install_requires = []
+install_requires = [
+    'pyyaml',
+    'CouchDb',
+    'iso8601',
+    'Flask',
+    'Flask-CouchDB',
+    'voluptuous',
+    'iso8601'
+]
+
 test_requires = []
-entry_points = {}
+entry_points = {
+    "console_scripts": [
+        "export = ocds_release.app:main",
+    ]
+}
 
 
-setup(name='openprocurement.ocds_release',
+setup(name='ocds_release',
       version='0.0.1',
-      description='openprocurement.ocds_release',
+      description='ocds_release',
       author='Quintagroup, Ltd.',
       author_email='info@quintagroup.com',
       license='Apache License 2.0',
       include_package_data=True,
+      packages=['ocds_release'],
       zip_safe=False,
       install_requires=install_requires,
       tests_require=test_requires,
