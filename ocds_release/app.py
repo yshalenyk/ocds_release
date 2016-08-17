@@ -3,7 +3,7 @@ import yaml
 from logging.config import dictConfig
 from logging import getLogger
 from utils import get_argparser, get_db_url
-from flask import Flask, jsonify
+from flask import Flask, jsonify, g
 from flask.views import View
 from .release import Package
 import flaskext.couchdb
@@ -11,12 +11,6 @@ import json
 
 
 app = Flask(__name__)
-
-
-def setup_database(app):
-    manager = flaskext.couchdb.CouchDBManager()
-    manager.setup(app)
-    setattr(app, 'db', manager.connect_db(app))
 
 
 def update_config(app, config, admin=False):
@@ -48,7 +42,7 @@ def update_config(app, config, admin=False):
 class Release(View):
 
     def dispatch_request(self, tender_id):
-        tender = app.db.get(tender_id)
+        tender = g.couch.get(tender_id)
         pack = Package(
             app.package['tags'],
             [tender],
@@ -66,5 +60,6 @@ def main():
         config = yaml.load(config_file.read())
     app.add_url_rule('/release/<tender_id>', view_func=Release.as_view('release'))
     update_config(app, config, admin=True)
-    setup_database(app)
+    manager = flaskext.couchdb.CouchDBManager()
+    manager.setup(app)
     app.run('0.0.0.0', 8080)
