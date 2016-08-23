@@ -7,12 +7,14 @@ class RemoveSchema(voluptuous.Schema):
         super(RemoveSchema, self).__init__(*args, **kwargs)
         self.extra = int(voluptuous.REMOVE_EXTRA)
 
+
 def value(val):
     try:
         parsed = int(val)
     except ValueError:
         parsed = float(val)
     return parsed
+
 
 identifier_schema = RemoveSchema(
     {
@@ -96,7 +98,7 @@ organization_schema = RemoveSchema(
         'additionalIdentifiers': identifier_schema,
         'name': unicode,
         'address': address_schema,
-        'contractPoint': contact_point_schema
+        'contactPoint': contact_point_schema
     }
 )
 
