@@ -8,7 +8,10 @@ install_requires = [
     'Flask',
     'Flask-CouchDB',
     'voluptuous',
-    'iso8601'
+    'iso8601',
+    'ocdsmerge',
+    'jsonpatch',
+    'simplejson'
 ]
 
 test_requires = []
