@@ -1,32 +1,35 @@
-from .utils import generate_ocid, now, generate_uri, generate_id
 from .tags import Tag
+from .utils import (
+    generate_ocid,
+    now,
+    generate_uri,
+    generate_id,
+    get_publisher
+)
 
 
 class Release(object):
 
-    def __init__(self, tags, tender):
+    def __init__(self, prefix, tender):
 
-        if not isinstance(tags, list):
-            tags = [tags]
-
-        self.tag = []
+        self.tag = ['tender']
         self.language = 'uk'
-        self.ocid = generate_ocid(tender['id'])
+        self.ocid = generate_ocid(prefix, tender['tenderID'])
         self.id = generate_id()
-        self.date = now().isoformat()
+        self.date = tender['dateModified']
         self.initiationType = 'tender'
         self.buyer = Tag('buyer', tender).serialize()
+        self.tender = Tag('tender', tender).serialize()
 
-        for _tag in tags:
-            if _tag in ['award', 'contract']:
-                items = tender.get(u'{}s'.format(_tag), '')
-                if items:
-                    setattr(self, '{}s'.format(_tag),
-                            [Tag(_tag, item).serialize() for item in items])
-                    self.tag.append(_tag)
-            else:
-                setattr(self, _tag, Tag(_tag, tender).serialize())
-                self.tag.append(_tag)
+        if 'awards' in tender:
+            self.tag.append('award')
+            setattr(self, 'awards',
+                    [Tag('award', award).serialize() for award in tender['awards']])
+
+        if 'contracts' in tender:
+            self.tag.append('contract')
+            setattr(self, 'contracts',
+                    [Tag('contract', contract).serialize() for contract in tender['contracts']]) 
 
     def serialize(self):
         return self.__dict__
@@ -36,7 +39,7 @@ class Package(object):
 
     def __init__(
         self,
-        tags,
+        prefix,
         tenders,
         publisher,
         license,
@@ -44,7 +47,7 @@ class Package(object):
     ):
         self.publishedDate = now().isoformat()
         self.uri = generate_uri()
-        self.releases = [Release(tags, tender).serialize()
+        self.releases = [Release(prefix, tender).serialize()
                          for tender in tenders]
         self.publisher = publisher
         self.license = license
