@@ -1,10 +1,10 @@
 import voluptuous
 
 
-class RemoveSchema(voluptuous.Schema):
+class BaseOCDSSchema(voluptuous.Schema):
 
     def __init__(self, *args, **kwargs):
-        super(RemoveSchema, self).__init__(*args, **kwargs)
+        super(BaseOCDSSchema, self).__init__(*args, **kwargs)
         self.extra = int(voluptuous.REMOVE_EXTRA)
 
 
@@ -16,7 +16,13 @@ def value(val):
     return parsed
 
 
-identifier_schema = RemoveSchema(
+def tender_status(status):
+    if status not in ['complete', 'unsuccessful', 'cancelled']:
+        return 'active'
+    return status
+
+
+identifier_schema = BaseOCDSSchema(
     {
         'scheme': unicode,
         'id': unicode,
@@ -26,7 +32,7 @@ identifier_schema = RemoveSchema(
 )
 
 
-document_schema = RemoveSchema(
+document_schema = BaseOCDSSchema(
     {
         'id': unicode,
         'documentType': unicode,
@@ -41,7 +47,7 @@ document_schema = RemoveSchema(
 )
 
 
-classification_schema = RemoveSchema(
+classification_schema = BaseOCDSSchema(
     {
         'scheme': unicode,
         'id': unicode,
@@ -49,7 +55,7 @@ classification_schema = RemoveSchema(
         'uri': unicode
     }
 )
-period_schema = RemoveSchema(
+period_schema = BaseOCDSSchema(
     {
         'startDate': unicode,
         'endDate': unicode
@@ -57,7 +63,7 @@ period_schema = RemoveSchema(
 )
 
 
-value_schema = RemoveSchema(
+value_schema = BaseOCDSSchema(
     {
         'amount': value,
         'currency': unicode
@@ -65,7 +71,7 @@ value_schema = RemoveSchema(
 )
 
 
-unit_schema = RemoveSchema(
+unit_schema = BaseOCDSSchema(
     {
         'name': unicode,
         'value': value_schema
@@ -73,7 +79,7 @@ unit_schema = RemoveSchema(
 )
 
 
-address_schema = RemoveSchema({
+address_schema = BaseOCDSSchema({
     'streetAddress': unicode,
     'locality': unicode,
     'postalCode': unicode,
@@ -81,7 +87,7 @@ address_schema = RemoveSchema({
 })
 
 
-contact_point_schema = RemoveSchema(
+contact_point_schema = BaseOCDSSchema(
     {
         'name': unicode,
         'email': unicode,
@@ -92,7 +98,7 @@ contact_point_schema = RemoveSchema(
 )
 
 
-organization_schema = RemoveSchema(
+organization_schema = BaseOCDSSchema(
     {
         'identifier': identifier_schema,
         'additionalIdentifiers': identifier_schema,
@@ -103,19 +109,19 @@ organization_schema = RemoveSchema(
 )
 
 
-items_schema = RemoveSchema(
+items_schema = BaseOCDSSchema(
     {
         'id': unicode,
         'description': unicode,
         'classification': classification_schema,
         'additionalClassifications': [classification_schema],
         'quantity': int,
-        'unit': unit_schema 
+        'unit': unit_schema
     }
 )
 
 
-award = RemoveSchema(
+award = BaseOCDSSchema(
     {
         'id': unicode,
         'title': unicode,
@@ -123,14 +129,14 @@ award = RemoveSchema(
         'status': unicode,
         'date': unicode,
         'value': value_schema,
-        'suppliers': [ organization_schema ],
-        'items': [ items_schema ],
+        'suppliers': [organization_schema],
+        'items': [items_schema],
         'contractPeriod': period_schema,
-        'documents':[document_schema]
+        'documents': [document_schema]
     }
 )
 
-contract = RemoveSchema(
+contract = BaseOCDSSchema(
     {
         'id': unicode,
         'awardID': unicode,
@@ -139,19 +145,19 @@ contract = RemoveSchema(
         'status': unicode,
         'period': period_schema,
         'value': value_schema,
-        'items': [ items_schema ],
+        'items': [items_schema],
         'dateSigned': unicode,
-        'documents':[document_schema]
+        'documents': [document_schema]
     }
 )
 
 
-tender = RemoveSchema(
+tender = BaseOCDSSchema(
     {
         'id': unicode,
         'title': unicode,
         'description': unicode,
-        'status': unicode,
+        'status': tender_status,
         'items': [items_schema],
         'minValue': value_schema,
         'value': value_schema,
@@ -159,7 +165,7 @@ tender = RemoveSchema(
         'procurementMethodRationale': unicode,
         'awardCriteria': unicode,
         'awardCriteriaDetails': unicode,
-        'submissionMethod': [ unicode ],
+        'submissionMethod': [unicode],
         'submissionMethodDetails': unicode,
         'tenderPeriod': period_schema,
         'enquiryPeriod': period_schema,
@@ -172,6 +178,3 @@ tender = RemoveSchema(
         'documents': [document_schema],
     }
 )
-
-
-
