@@ -1,10 +1,9 @@
 from .tags import Tag
-from .utils import (
+from ocds_release.utils import (
     generate_ocid,
     now,
     generate_uri,
     generate_id,
-    get_publisher
 )
 
 
@@ -57,3 +56,7 @@ class Package(object):
         return self.__dict__
 
 
+class Record(object):
+
+    def __init__(self):
+        pass

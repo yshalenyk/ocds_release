@@ -32,6 +32,33 @@ def get_db_url(user, password, host, port, db_name=''):
     )
 
 
+def update_config(app, config, admin=False):
+
+    db_config = config['db']
+
+    if admin:
+        user = db_config['user.admin']['user']
+        password = db_config['user.admin']['password']
+    else:
+        user = db_config['user.user']['user']
+        password = db_config['user.user']['password']
+
+    db_url = get_db_url(
+        user,
+        password,
+        db_config['net']['host'],
+        db_config['net']['port'],
+    )
+    app.config.update(
+        COUCHDB_SERVER=db_url,
+        COUCHDB_DATABASE=db_config['net']['name'],
+    )
+
+    app.config.update(config['app'])
+    setattr(app, 'package', config.get('package', ''))
+
+
+
 def generate_uri():
     return 'https://prozorro.gov.ua/releases/{}'.format(uuid.uuid4().hex)
 
