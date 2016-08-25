@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import argparse
 import datetime
 import uuid
@@ -10,8 +11,8 @@ def get_argparser():
     return parser
 
 
-def generate_ocid(tender_id):
-    return "ocid-32d4gz-fake-{}".format(tender_id)
+def generate_ocid(prefix, tenderID):
+    return "{}-{}".format(prefix, tenderID)
 
 
 def now():
@@ -32,11 +33,11 @@ def get_db_url(user, password, host, port, db_name=''):
 
 
 def generate_uri():
-    return 'https://fake-url/tenders-{}'.format(uuid.uuid4().hex)
+    return 'https://prozorro.gov.ua/releases/{}'.format(uuid.uuid4().hex)
 
 
 def generate_id():
-    return "{}-{}".format(uuid.uuid4().hex, uuid.uuid4().hex)
+    return uuid.uuid4().hex
 
 
 def get_tender_awards(tender):
